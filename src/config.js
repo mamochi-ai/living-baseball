@@ -69,6 +69,13 @@ export const SWING = {
   cursorRangeY: [0.0, 1.05],
 };
 
+// 打者向けの予報円（通過位置のめやす）
+export const FORECAST = {
+  maxRadius: 0.3, // 投げた直後の半径（m）
+  minRadius: 0.07, // 判定面に届くときの半径
+  offsetRatio: 0.7, // 円の中心を通過点からずらす最大量（半径に対する割合）
+};
+
 export const PHYSICS = {
   gravity: 9.8,
   drag: 0.3, // 線形空気抵抗（ピンポン玉なので少し効かせる）

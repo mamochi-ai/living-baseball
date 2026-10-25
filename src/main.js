@@ -12,6 +12,7 @@ import { PitchEditor } from './pitchEditor.js';
 import { ZoneEditor } from './zoneEditor.js';
 import { initAudio, setMuted, isMuted, sfx } from './audio.js';
 import { project } from './projection.js';
+import { forecastCircle, randomForecastOffset } from './forecast.js';
 
 const $ = (id) => document.getElementById(id);
 const now = () => performance.now() / 1000;
@@ -25,7 +26,7 @@ const PLAYER = ['1P', '2P'];
 const app = {
   phase: 'loading',
   mode: 'versus', // 'versus' | 'practice'
-  settings: { innings: GAME.innings, mute: false, practiceZones: true },
+  settings: { innings: GAME.innings, mute: false, practiceZones: true, forecast: true },
   zones: null,
   initialZones: null,
   game: newGame(),
@@ -139,6 +140,7 @@ function setPhase(phase, opts = {}) {
       $('set-innings').value = String(app.settings.innings);
       $('set-mute').checked = app.settings.mute;
       $('set-practice-zones').checked = app.settings.practiceZones;
+      $('set-forecast').checked = app.settings.forecast;
       show('screen-settings');
       break;
     case 'handoff':
@@ -263,6 +265,7 @@ function startPitch() {
   app.cur = {
     path,
     run: new PitchRun(path, app.zones),
+    forecastOffset: randomForecastOffset(),
     windupStart: t,
     releaseAt: t + WINDUP_TOTAL,
     swingAt: null,
@@ -479,6 +482,16 @@ function samplePath(pts, t) {
   return a.p.map((x, i) => x + (b.p[i] - x) * k);
 }
 
+/** 予報円。リリース後から判定面に届くまで表示し、少しだけ残して消す */
+function forecastAt(c, t) {
+  if (!app.settings.forecast || t < 0 || c.run.batted) return null;
+  const T = c.path.duration;
+  const fade = t <= T ? 1 : 1 - (t - T) / 0.25;
+  if (fade <= 0) return null;
+  const pass = c.path.posAtS(1);
+  return { ...forecastCircle(pass, c.forecastOffset, t, T), alpha: fade };
+}
+
 function ballWithTrail(c, t) {
   const pos = ballPosAt(c, t);
   if (!pos) return null;
@@ -545,6 +558,7 @@ function frame() {
   let batterFrame = BATTER_IDLE_FRAME;
   let ball = null;
   let previewPath = null;
+  let forecast = null;
 
   if (app.phase === 'countdown') {
     const n = 3 - Math.floor((t - app.countdownAt) / 0.6);
@@ -579,6 +593,7 @@ function frame() {
       }
     }
     ball = ballWithTrail(c, tp);
+    forecast = forecastAt(c, tp);
   }
 
   if (app.phase === 'pitchEdit' && pitchEditor.pitch) {
@@ -610,6 +625,7 @@ function frame() {
     showZones,
     previewPath,
     showStrikeZone: inPlay,
+    forecast,
     cursor: ['ready', 'countdown', 'pitching'].includes(app.phase) ? app.cursor : null,
     shake: t < app.shakeUntil ? (app.shakeUntil - t) / 0.45 : 0,
     time: t,
@@ -677,6 +693,10 @@ function bindUi() {
   $('set-mute').addEventListener('change', (e) => {
     app.settings.mute = e.target.checked;
     setMuted(app.settings.mute);
+    saveSettings();
+  });
+  $('set-forecast').addEventListener('change', (e) => {
+    app.settings.forecast = e.target.checked;
     saveSettings();
   });
   $('set-practice-zones').addEventListener('change', (e) => {

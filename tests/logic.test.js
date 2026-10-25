@@ -8,6 +8,7 @@ import { firstCollision, simulateBattedBall, isStrike } from '../src/physics.js'
 import { launchFromOffsets, computeContact } from '../src/batting.js';
 import { buildPitchPath, constrainPitch, defaultPitch, releasePoint, pitchDuration } from '../src/pitch.js';
 import { PitchRun } from '../src/pitchRun.js';
+import { forecastCircle, randomForecastOffset } from '../src/forecast.js';
 import { project, unprojectAtZ, unprojectAtX, computeViewport, imageToScreen, screenToImage } from '../src/projection.js';
 import { PITCH_LIMITS, PLATE, SWING, ROOM } from '../src/config.js';
 
@@ -309,4 +310,21 @@ test('打撃可能な奥行きの外ではバットに当たらない', () => {
   const tooEarly = path.duration * 0.5;
   const ball = path.posAt(tooEarly);
   assert.equal(computeContact(path, tooEarly, [ball[0], ball[1]]), null);
+});
+
+// ---------- 予報円 ----------
+test('予報円は近づくほど小さくなり、通過点は常に円の内側', () => {
+  const pass = [0.05, 0.3];
+  let seed = 1;
+  const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let n = 0; n < 200; n++) {
+    const off = randomForecastOffset(rand);
+    let prevR = Infinity;
+    for (let t = 0; t <= 1.0; t += 0.05) {
+      const f = forecastCircle(pass, off, t, 1.0);
+      assert.ok(f.r <= prevR + 1e-12);
+      prevR = f.r;
+      assert.ok(Math.hypot(f.center[0] - pass[0], f.center[1] - pass[1]) < f.r, '通過点が円の外');
+    }
+  }
 });

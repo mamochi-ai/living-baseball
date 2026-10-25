@@ -66,6 +66,7 @@ export class Renderer {
     ];
     if (scene.previewPath) items.push({ z: 99, draw: () => this.drawPreviewPath(scene.previewPath) });
     if (scene.showStrikeZone) items.push({ z: PLATE.z + 0.01, draw: () => this.drawStrikeZone() });
+    if (scene.forecast) items.push({ z: PLATE.z + 0.005, draw: () => this.drawForecast(scene.forecast) });
     if (scene.cursor) items.push({ z: PLATE.z - 0.01, draw: () => this.drawCursor(scene.cursor) });
     if (scene.ball) items.push({ z: scene.ball.pos[2], draw: () => this.drawBall(scene.ball) });
     items.sort((a, b) => b.z - a.z);
@@ -162,6 +163,28 @@ export class Renderer {
     roundRect(ctx, a.x, a.y, b.x - a.x, b.y - a.y, 6);
     ctx.fill();
     ctx.stroke();
+  }
+
+  drawForecast(f) {
+    const { ctx, vp } = this;
+    const s = worldToScreen(vp, [f.center[0], f.center[1], PLATE.z]);
+    const r = f.r * s.scale;
+    ctx.save();
+    ctx.globalAlpha = f.alpha ?? 1;
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([10, 7]);
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   drawCursor(c) {
