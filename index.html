@@ -67,14 +67,13 @@
       <p id="loading-text">読み込み中…</p>
     </section>
 
-    <section id="screen-title" class="screen opaque hidden">
-      <h1>リビング・ピンポン野球</h1>
-      <p class="sub">新聞紙バットとピンポン玉で、昭和の居間で野球をしよう</p>
-      <div class="menu">
-        <button id="btn-versus" class="primary big">2人で対戦</button>
-        <button id="btn-practice" class="big">打撃練習</button>
-        <button id="btn-howto">遊び方</button>
-        <button id="btn-settings">設定</button>
+    <section id="screen-title" class="hidden">
+      <!-- タイトル画像に描かれたボタンの上に、透明なボタンを重ねる（位置は画像に対する%） -->
+      <div class="title-art" role="img" aria-label="リビング・ピンポン野球">
+        <button id="btn-versus" class="hotspot" style="left: 37%; top: 54.3%; width: 32.2%; height: 10.4%">2人で対戦</button>
+        <button id="btn-practice" class="hotspot" style="left: 38%; top: 66.7%; width: 30.4%; height: 8.8%">打撃練習</button>
+        <button id="btn-howto" class="hotspot" style="left: 38.3%; top: 76.9%; width: 14.6%; height: 7.6%">遊び方</button>
+        <button id="btn-settings" class="hotspot" style="left: 53.7%; top: 76.9%; width: 14.5%; height: 7.6%">設定</button>
       </div>
     </section>
 

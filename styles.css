@@ -80,6 +80,47 @@ button:active {
   background: rgba(30, 18, 8, 0.55);
 }
 
+/* ---------- タイトル ---------- */
+#screen-title {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a1a10;
+}
+
+.title-art {
+  position: relative;
+  /* 1536x1024 の絵を画面に収める（切り抜かない） */
+  width: min(100vw, 150vh);
+  width: min(100vw, 150dvh);
+  aspect-ratio: 3 / 2;
+  max-height: 100%;
+  background: url('assets/title/title.jpg') center / contain no-repeat;
+}
+
+.hotspot {
+  position: absolute;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+}
+
+.hotspot:active {
+  transform: none;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.hotspot:focus-visible {
+  outline: 4px solid #fff;
+}
+
 .screen.opaque {
   background: linear-gradient(#f3dfb8, #e7c58d);
 }
