@@ -814,8 +814,21 @@ function bindZoneEditor() {
       status(e.message);
     }
   });
+  // 確認ダイアログが使えない環境もあるので、2回押しで確定する
+  let resetArmed = null;
   $('z-reset').addEventListener('click', () => {
-    if (!confirm('判定範囲を初期値に戻しますか？')) return;
+    const btn = $('z-reset');
+    if (!resetArmed) {
+      btn.textContent = 'もう一度押すと初期化';
+      resetArmed = setTimeout(() => {
+        resetArmed = null;
+        btn.textContent = '初期化';
+      }, 3000);
+      return;
+    }
+    clearTimeout(resetArmed);
+    resetArmed = null;
+    btn.textContent = '初期化';
     clearSavedZones();
     app.zones = app.initialZones;
     zoneEditor.open(app.zones);
