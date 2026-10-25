@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#3a2414" />
+    <title>リビング・ピンポン野球</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <!-- 試合中の表示 -->
+    <div id="hud" class="hidden">
+      <div id="scoreboard">
+        <div class="row">
+          <span class="who" data-p="0">1P</span>
+          <span id="score">0 - 0</span>
+          <span class="who" data-p="1">2P</span>
+        </div>
+        <div class="row small">
+          <span id="inning">1回表</span>
+          <span>B <span id="balls" class="dots"></span></span>
+          <span>S <span id="strikes" class="dots"></span></span>
+        </div>
+        <div class="row small" id="bases-row">塁 <span id="bases"></span></div>
+      </div>
+      <button id="btn-menu" class="round-btn" aria-label="メニュー">Ⅱ</button>
+    </div>
+
+    <!-- 打者の操作 -->
+    <div id="bat-controls" class="hidden">
+      <div id="stick-area"><div id="stick"><div id="stick-knob"></div></div></div>
+      <button id="btn-swing">打つ</button>
+    </div>
+
+    <div id="banner" class="hidden"></div>
+    <div id="countdown" class="hidden"></div>
+
+    <!-- 投球編集 -->
+    <div id="pitch-panel" class="hidden">
+      <h2 id="pitch-title">1P の投球をつくる</h2>
+      <label class="speed">球速
+        <span class="hint">ゆっくり</span>
+        <input id="speed" type="range" min="1" max="10" step="1" value="5" />
+        <span class="hint">はやい</span>
+        <span id="speed-val"></span>
+      </label>
+      <div class="seg" role="group">
+        <button id="mode-points" class="on">点を動かす</button>
+        <button id="mode-free">指でなぞる</button>
+      </div>
+      <canvas id="ed-top" class="editor"></canvas>
+      <canvas id="ed-side" class="editor"></canvas>
+      <div class="btns">
+        <button id="btn-reset">リセット</button>
+        <button id="btn-try">試し投げ</button>
+        <button id="btn-confirm" class="primary">決定して渡す</button>
+      </div>
+    </div>
+
+    <!-- 全画面の画面たち -->
+    <section id="screen-loading" class="screen opaque">
+      <h1>リビング・ピンポン野球</h1>
+      <p id="loading-text">読み込み中…</p>
+    </section>
+
+    <section id="screen-title" class="screen opaque hidden">
+      <h1>リビング・ピンポン野球</h1>
+      <p class="sub">新聞紙バットとピンポン玉で、昭和の居間で野球をしよう</p>
+      <div class="menu">
+        <button id="btn-versus" class="primary big">2人で対戦</button>
+        <button id="btn-practice" class="big">打撃練習</button>
+        <button id="btn-howto">遊び方</button>
+        <button id="btn-settings">設定</button>
+      </div>
+    </section>
+
+    <section id="screen-howto" class="screen opaque hidden">
+      <h2>遊び方</h2>
+      <div class="howto">
+        <p>1台を2人で交互に渡して遊びます。投手は魔球をつくり、打者は見極めて打ちます。</p>
+        <ul>
+          <li><b>セーフ（ヒット）は4か所だけ</b>：①奥のカーテンとカーテンの間 ②右のドア ③カレンダー付近 ④左奥のタンスの上。</li>
+          <li>それ以外（床・ソファ・テレビ・カーテン・電球など）はすべてアウト。投手の守備範囲に先に入ってもアウト。</li>
+          <li>見送り: 打者の前の枠を通ればストライク、外ればボール。空振りはストライク。</li>
+          <li>投球が床や電球に先に当たったらボール。</li>
+          <li>3ストライクで1アウト。<b>1アウトで攻守交代</b>。4ボールで出塁。</li>
+          <li>簡易ルール: ヒットも四球も、打者が一塁へ入り、走者は全員1つ進みます（通常の押し出しとは違います）。ホームに帰ると1点。</li>
+          <li>標準3回。最終回も両者が攻撃してから比べます。同点は引き分け。</li>
+        </ul>
+        <p><b>投手</b>：球速と、上から見た曲がり・横から見た高さを指で決めます。終点はゾーンの外でもOK。</p>
+        <p><b>打者</b>：左手でミートカーソルを動かし、右手の「打つ」。早く振ると左へ、遅いと右へ。芯の上下で打球の高さが変わります。</p>
+      </div>
+      <button class="back primary">もどる</button>
+    </section>
+
+    <section id="screen-settings" class="screen opaque hidden">
+      <h2>設定</h2>
+      <div class="settings">
+        <label>イニング数
+          <select id="set-innings">
+            <option value="1">1回</option>
+            <option value="3" selected>3回（標準）</option>
+            <option value="5">5回</option>
+          </select>
+        </label>
+        <label><input id="set-mute" type="checkbox" /> 音を消す</label>
+        <label><input id="set-practice-zones" type="checkbox" checked /> 練習でセーフ範囲を薄く表示</label>
+        <button id="btn-zone-editor">判定範囲を調整</button>
+      </div>
+      <button class="back primary">もどる</button>
+    </section>
+
+    <section id="screen-handoff" class="screen opaque hidden">
+      <p class="big-msg" id="handoff-msg"></p>
+      <p class="sub" id="handoff-sub"></p>
+      <button id="btn-handoff" class="primary big">受け取った</button>
+    </section>
+
+    <section id="screen-ready" class="overlay-top hidden">
+      <p id="ready-msg">左手でカーソルを動かして準備しよう</p>
+      <button id="btn-ready" class="primary big">準備OK</button>
+    </section>
+
+    <section id="screen-result" class="overlay-bottom hidden">
+      <button id="btn-next" class="primary big">次へ</button>
+    </section>
+
+    <section id="screen-menu" class="screen hidden">
+      <div class="menu card">
+        <button id="btn-resume" class="primary">つづける</button>
+        <button id="btn-mute-toggle">音: オン</button>
+        <button id="btn-quit">タイトルへ</button>
+      </div>
+    </section>
+
+    <section id="screen-gameover" class="screen opaque hidden">
+      <h2>試合終了</h2>
+      <p class="big-msg" id="final-score"></p>
+      <p class="big-msg" id="final-winner"></p>
+      <div class="menu">
+        <button id="btn-rematch" class="primary big">再戦</button>
+        <button id="btn-to-title">タイトルへ</button>
+      </div>
+    </section>
+
+    <section id="screen-zones" class="hidden">
+      <canvas id="zone-canvas"></canvas>
+      <div class="zone-bar">
+        <button id="z-save" class="primary">保存</button>
+        <button id="z-reset">初期化</button>
+        <button id="z-export">JSON書き出し</button>
+        <button id="z-import">JSON読み込み</button>
+        <button id="z-close">閉じる</button>
+        <span id="z-status"></span>
+      </div>
+      <div id="z-json" class="hidden">
+        <textarea id="z-text" spellcheck="false"></textarea>
+        <div>
+          <input id="z-file" type="file" accept="application/json,.json" />
+          <button id="z-apply" class="primary">この内容を読み込む</button>
+          <button id="z-json-close">閉じる</button>
+        </div>
+      </div>
+    </section>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>

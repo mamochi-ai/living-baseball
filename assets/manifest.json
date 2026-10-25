@@ -1,0 +1,495 @@
+{
+  "characters": {
+    "pitcher": {
+      "canvas": [
+        480,
+        440
+      ],
+      "order": "01 to 12",
+      "frames": [
+        {
+          "file": "assets/pitcher/pitcher_01.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            0,
+            0,
+            362,
+            362
+          ],
+          "offset": [
+            137,
+            62
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_02.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            362,
+            0,
+            724,
+            362
+          ],
+          "offset": [
+            118,
+            63
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_03.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            724,
+            0,
+            1086,
+            362
+          ],
+          "offset": [
+            108,
+            63
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_04.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            1086,
+            0,
+            1448,
+            362
+          ],
+          "offset": [
+            139,
+            64
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_05.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            0,
+            362,
+            362,
+            724
+          ],
+          "offset": [
+            129,
+            65
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_06.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            362,
+            362,
+            724,
+            724
+          ],
+          "offset": [
+            124,
+            66
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_07.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            724,
+            362,
+            1086,
+            724
+          ],
+          "offset": [
+            125,
+            65
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_08.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            1086,
+            362,
+            1448,
+            724
+          ],
+          "offset": [
+            126,
+            64
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_09.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            0,
+            724,
+            362,
+            1086
+          ],
+          "offset": [
+            109,
+            76
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_10.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            362,
+            724,
+            724,
+            1086
+          ],
+          "offset": [
+            87,
+            74
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_11.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            724,
+            724,
+            1086,
+            1086
+          ],
+          "offset": [
+            146,
+            68
+          ]
+        },
+        {
+          "file": "assets/pitcher/pitcher_12.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            1086,
+            724,
+            1448,
+            1086
+          ],
+          "offset": [
+            130,
+            73
+          ]
+        }
+      ]
+    },
+    "batter": {
+      "canvas": [
+        480,
+        440
+      ],
+      "order": "01 to 12",
+      "frames": [
+        {
+          "file": "assets/batter/batter_01.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            0,
+            0,
+            362,
+            362
+          ],
+          "offset": [
+            116,
+            59
+          ]
+        },
+        {
+          "file": "assets/batter/batter_02.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            362,
+            0,
+            724,
+            362
+          ],
+          "offset": [
+            132,
+            57
+          ]
+        },
+        {
+          "file": "assets/batter/batter_03.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            724,
+            0,
+            1086,
+            362
+          ],
+          "offset": [
+            130,
+            58
+          ]
+        },
+        {
+          "file": "assets/batter/batter_04.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            1086,
+            0,
+            1448,
+            362
+          ],
+          "offset": [
+            132,
+            58
+          ]
+        },
+        {
+          "file": "assets/batter/batter_05.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            0,
+            362,
+            362,
+            724
+          ],
+          "offset": [
+            123,
+            75
+          ]
+        },
+        {
+          "file": "assets/batter/batter_06.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            362,
+            362,
+            724,
+            724
+          ],
+          "offset": [
+            132,
+            98
+          ]
+        },
+        {
+          "file": "assets/batter/batter_07.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            724,
+            362,
+            1086,
+            724
+          ],
+          "offset": [
+            69,
+            109
+          ]
+        },
+        {
+          "file": "assets/batter/batter_08.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            1086,
+            362,
+            1448,
+            724
+          ],
+          "offset": [
+            83,
+            107
+          ]
+        },
+        {
+          "file": "assets/batter/batter_09.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            0,
+            724,
+            362,
+            1086
+          ],
+          "offset": [
+            68,
+            98
+          ]
+        },
+        {
+          "file": "assets/batter/batter_10.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            362,
+            724,
+            724,
+            1086
+          ],
+          "offset": [
+            125,
+            87
+          ]
+        },
+        {
+          "file": "assets/batter/batter_11.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            724,
+            724,
+            1086,
+            1086
+          ],
+          "offset": [
+            127,
+            73
+          ]
+        },
+        {
+          "file": "assets/batter/batter_12.png",
+          "anchor": [
+            240,
+            420
+          ],
+          "source_box": [
+            1086,
+            724,
+            1448,
+            1086
+          ],
+          "offset": [
+            128,
+            97
+          ]
+        }
+      ]
+    }
+  },
+  "props": {
+    "lamp_intact": {
+      "file": "assets/props/lamp_intact.png",
+      "size": [
+        410,
+        338
+      ]
+    },
+    "lamp_broken": {
+      "file": "assets/props/lamp_broken.png",
+      "size": [
+        420,
+        338
+      ]
+    },
+    "glass_fragments": {
+      "file": "assets/props/glass_fragments.png",
+      "size": [
+        300,
+        275
+      ]
+    },
+    "vase_intact": {
+      "file": "assets/props/vase_intact.png",
+      "size": [
+        300,
+        334
+      ]
+    },
+    "vase_broken": {
+      "file": "assets/props/vase_broken.png",
+      "size": [
+        575,
+        240
+      ]
+    },
+    "glass_intact": {
+      "file": "assets/props/glass_intact.png",
+      "size": [
+        210,
+        250
+      ]
+    },
+    "bat_intact": {
+      "file": "assets/props/bat_intact.png",
+      "size": [
+        553,
+        326
+      ]
+    },
+    "bat_bent": {
+      "file": "assets/props/bat_bent.png",
+      "size": [
+        520,
+        320
+      ]
+    },
+    "pingpong_ball": {
+      "file": "assets/props/pingpong_ball.png",
+      "size": [
+        200,
+        215
+      ]
+    }
+  }
+}

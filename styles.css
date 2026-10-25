@@ -1,0 +1,490 @@
+:root {
+  --cream: #fff6e3;
+  --brown: #5a3a1a;
+  --accent: #e0632b;
+  --green: #3a9a4a;
+  font-family: 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #2a1a10;
+  color: var(--brown);
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+canvas#game {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+}
+
+.hidden {
+  display: none !important;
+}
+
+button {
+  font: inherit;
+  font-weight: bold;
+  color: var(--brown);
+  background: var(--cream);
+  border: 3px solid var(--brown);
+  border-radius: 14px;
+  padding: 10px 18px;
+  min-height: 48px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: #8a3510;
+  color: #fff;
+}
+
+button.big {
+  font-size: 22px;
+  padding: 14px 32px;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* ---------- 全画面 ---------- */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  z-index: 20;
+  background: rgba(30, 18, 8, 0.55);
+}
+
+.screen.opaque {
+  background: linear-gradient(#f3dfb8, #e7c58d);
+}
+
+.screen h1 {
+  font-size: 40px;
+  margin: 0;
+}
+
+.screen h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.sub {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 260px;
+}
+
+.card {
+  background: var(--cream);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+.big-msg {
+  white-space: pre-line;
+  font-size: 30px;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+}
+
+.howto {
+  max-width: 760px;
+  max-height: 70vh;
+  overflow: auto;
+  background: var(--cream);
+  border-radius: 14px;
+  padding: 8px 20px;
+  line-height: 1.6;
+  touch-action: pan-y;
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 18px;
+  background: var(--cream);
+  border-radius: 14px;
+  padding: 20px 28px;
+}
+
+.settings input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+}
+
+.settings select {
+  font-size: 18px;
+  margin-left: 8px;
+}
+
+.overlay-top {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 246, 227, 0.92);
+  border-radius: 16px;
+  padding: 10px 18px;
+  z-index: 15;
+}
+
+.overlay-top p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.overlay-bottom {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+}
+
+/* ---------- HUD ---------- */
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+#scoreboard {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
+  background: rgba(255, 246, 227, 0.92);
+  border-radius: 14px;
+  padding: 8px 16px;
+  min-width: 220px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+#scoreboard .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+#scoreboard .row.small {
+  font-size: 15px;
+}
+
+#scoreboard .who.batting {
+  color: var(--accent);
+}
+
+#score {
+  font-size: 28px;
+}
+
+.dots {
+  letter-spacing: 2px;
+}
+
+body.editing #btn-menu {
+  right: calc(min(440px, 44vw) + 12px);
+}
+
+#btn-menu {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  right: max(10px, env(safe-area-inset-right));
+  pointer-events: auto;
+}
+
+.round-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 18px;
+}
+
+/* ---------- 打者の操作 ---------- */
+#bat-controls {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+
+#stick-area {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46%;
+  height: 72%;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+#stick {
+  position: absolute;
+  left: max(28px, env(safe-area-inset-left));
+  bottom: 28px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.55);
+}
+
+#stick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  border-radius: 50%;
+  background: rgba(255, 246, 227, 0.85);
+}
+
+#btn-swing {
+  position: absolute;
+  right: max(28px, env(safe-area-inset-right));
+  bottom: 28px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  font-size: 40px;
+  background: rgba(255, 246, 227, 0.92);
+  border: 6px solid var(--brown);
+  pointer-events: auto;
+  touch-action: none;
+}
+
+#btn-swing.used {
+  opacity: 0.5;
+}
+
+/* ---------- 演出 ---------- */
+#banner {
+  position: fixed;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  z-index: 14;
+  font-size: 52px;
+  font-weight: 900;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 0 6px #000, 0 3px 0 #8a3510, 0 0 18px rgba(0, 0, 0, 0.6);
+  white-space: pre-line;
+  pointer-events: none;
+  animation: pop 0.25s ease-out;
+}
+
+#banner .small {
+  display: block;
+  font-size: 26px;
+}
+
+#banner.kora {
+  color: #ffdf3a;
+  font-size: 84px;
+}
+
+@keyframes pop {
+  from {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+  }
+}
+
+#countdown {
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  z-index: 14;
+  font-size: 120px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 10px #000;
+  pointer-events: none;
+}
+
+/* ---------- 投球編集 ---------- */
+#pitch-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(440px, 44vw);
+  z-index: 16;
+  background: rgba(255, 246, 227, 0.96);
+  padding: 10px 14px max(10px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+#pitch-panel h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.speed {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+}
+
+.speed input {
+  flex: 1;
+  height: 36px;
+}
+
+.hint {
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.seg {
+  display: flex;
+}
+
+.seg button {
+  flex: 1;
+  border-radius: 0;
+  min-height: 40px;
+  padding: 6px;
+}
+
+.seg button:first-child {
+  border-radius: 12px 0 0 12px;
+}
+
+.seg button:last-child {
+  border-radius: 0 12px 12px 0;
+  border-left: none;
+}
+
+.seg button.on {
+  background: var(--brown);
+  color: #fff;
+}
+
+canvas.editor {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  border-radius: 10px;
+  border: 2px solid rgba(90, 58, 26, 0.4);
+  touch-action: none;
+}
+
+.btns {
+  display: flex;
+  gap: 8px;
+}
+
+.btns button {
+  flex: 1;
+  padding: 8px 6px;
+}
+
+/* ---------- 判定範囲の調整 ---------- */
+#screen-zones {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: #222;
+}
+
+#zone-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.zone-bar {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 246, 227, 0.9);
+  padding: 6px 10px;
+  border-radius: 14px;
+}
+
+.zone-bar button {
+  white-space: nowrap;
+  padding: 6px 12px;
+  min-height: 40px;
+}
+
+#z-status {
+  font-size: 13px;
+  min-width: 80px;
+}
+
+#z-json {
+  position: absolute;
+  inset: 70px 40px 40px;
+  background: var(--cream);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#z-json textarea {
+  flex: 1;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: auto;
+}
