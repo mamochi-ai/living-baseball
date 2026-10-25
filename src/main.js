@@ -317,6 +317,7 @@ const OUT_TEXT = {
   behind: 'うしろへ飛んだ',
   tv: 'テレビに当たった',
   vase: '花瓶に当たった',
+  photo: '写真立てに当たった',
   timeout: '失速した',
 };
 

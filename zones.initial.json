@@ -1,6 +1,6 @@
 {
   "coordinateSystem": "normalized image coordinates, x right, y down; reference background 1536x1024",
-  "status": "initial estimates; edit visually before finalizing",
+  "status": "initial estimates (left zone widened above the TV, right zone widened to the ceiling and back corner); edit visually before finalizing",
   "safeZones": [
     {
       "id": "between_curtains",
@@ -26,23 +26,23 @@
     },
     {
       "id": "right_door",
-      "label": "右のドア",
+      "label": "右のドア〜右の壁",
       "polygon": [
         [
-          0.913,
-          0.198
+          0.824,
+          0.117
         ],
         [
-          0.997,
-          0.14
+          1.0,
+          0.023
         ],
         [
-          0.997,
-          0.365
+          1.0,
+          0.382
         ],
         [
-          0.913,
-          0.401
+          0.824,
+          0.336
         ]
       ]
     },
@@ -70,23 +70,31 @@
     },
     {
       "id": "rear_left_cabinet_top",
-      "label": "左奥のタンスの上",
+      "label": "テレビの上〜左奥の壁",
       "polygon": [
         [
-          0.32,
-          0.282
+          0.166,
+          0.11
         ],
         [
           0.401,
-          0.282
+          0.11
         ],
         [
           0.401,
           0.356
         ],
         [
-          0.32,
+          0.342,
           0.356
+        ],
+        [
+          0.342,
+          0.31
+        ],
+        [
+          0.166,
+          0.31
         ]
       ]
     }

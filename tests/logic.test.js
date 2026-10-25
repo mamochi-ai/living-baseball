@@ -8,7 +8,7 @@ import { firstCollision, simulateBattedBall, isStrike } from '../src/physics.js'
 import { launchFromOffsets, computeContact } from '../src/batting.js';
 import { buildPitchPath, constrainPitch, defaultPitch, releasePoint, pitchDuration } from '../src/pitch.js';
 import { PitchRun } from '../src/pitchRun.js';
-import { project, unprojectAtZ, computeViewport, imageToScreen, screenToImage } from '../src/projection.js';
+import { project, unprojectAtZ, unprojectAtX, computeViewport, imageToScreen, screenToImage } from '../src/projection.js';
 import { PITCH_LIMITS, PLATE, SWING, ROOM } from '../src/config.js';
 
 const zonesJson = JSON.parse(fs.readFileSync(new URL('../zones.initial.json', import.meta.url)));
@@ -114,7 +114,7 @@ for (const id of ['between_curtains', 'right_door', 'calendar', 'rear_left_cabin
 
 test('投手・床・壁・テレビはアウト', () => {
   const z = zones();
-  for (const id of ['pitcher', 'floor', 'backWall', 'leftWall', 'rightWall', 'tv']) {
+  for (const id of ['pitcher', 'floor', 'backWall', 'leftWall', 'rightWall', 'tv', 'photo']) {
     const shot = findShot(z, id);
     assert.ok(shot, `${id} に当たる打球が見つからない`);
     assert.equal(shot.sim.hit.result, 'out');
@@ -134,6 +134,33 @@ test('投手の守備範囲は奥のセーフ区域より優先（先に通過�
   const z2 = zones();
   z2.pitcherCatchZone.radius = [0.001, 0.001];
   assert.equal(firstCollision(start, target.map((c, i) => c + dir[i] * 0.1), z2).id, 'between_curtains');
+});
+
+test('写真立てはセーフ区域の中にあってもアウト', () => {
+  const z = zones();
+  const photo = z.obstacles.find((o) => o.id === 'photo');
+  const cabinet = z.safeZones.find((s) => s.id === 'rear_left_cabinet_top');
+  const c = [(photo.polygon[0][0] + photo.polygon[1][0]) / 2, (photo.polygon[0][1] + photo.polygon[2][1]) / 2];
+  assert.ok(pointInPolygon(c, cabinet.polygon), '写真立てはセーフ区域の内側にある');
+  const target = unprojectAtZ(c[0], c[1], cabinet.surface.z);
+  const start = [-0.1, 0.3, PLATE.z];
+  const end = start.map((v, i) => v + (target[i] - v) * 1.2);
+  const hit = firstCollision(start, end, z);
+  assert.equal(hit.id, 'photo');
+  assert.equal(hit.result, 'out');
+  // 写真立てから外れた位置ならセーフ
+  const t2 = unprojectAtZ(0.2, 0.2, cabinet.surface.z);
+  assert.equal(firstCollision(start, start.map((v, i) => v + (t2[i] - v) * 1.2), z).id, 'rear_left_cabinet_top');
+});
+
+test('右の区域は天井近くと右奥の壁もセーフ', () => {
+  const z = zones();
+  const start = [-0.1, 0.3, PLATE.z];
+  for (const [u, v] of [[0.84, 0.15], [0.97, 0.06], [0.86, 0.3]]) {
+    const target = unprojectAtX(u, v, ROOM.rightX);
+    const hit = firstCollision(start, start.map((c, i) => c + (target[i] - c) * 1.05), z);
+    assert.equal(hit.id, 'right_door', `${u},${v}`);
+  }
 });
 
 test('電球が先なら奥がセーフでもアウト', () => {

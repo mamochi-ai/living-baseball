@@ -8,7 +8,8 @@ const SURFACE_BY_ID = {
   between_curtains: { type: 'backWall' },
   right_door: { type: 'rightWall' },
   calendar: { type: 'backWall' },
-  rear_left_cabinet_top: { type: 'depth', z: 4.7 },
+  // テレビ左端の上から左奥の壁まで。左の壁（x=-1.61）より内側に収まる奥行きの面で判定する
+  rear_left_cabinet_top: { type: 'depth', z: 3.0 },
 };
 
 const DEFAULT_EXTRAS = {
@@ -24,6 +25,18 @@ const DEFAULT_EXTRAS = {
         [0.342, 0.31],
         [0.342, 0.49],
         [0.166, 0.49],
+      ],
+    },
+    {
+      // テレビの上の写真立て。セーフ区域より手前の面に置き、当たればアウト
+      id: 'photo',
+      label: '写真立て',
+      depthZ: 2.95,
+      polygon: [
+        [0.276, 0.26],
+        [0.322, 0.26],
+        [0.322, 0.313],
+        [0.276, 0.313],
       ],
     },
     {
