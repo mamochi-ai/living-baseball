@@ -47,7 +47,9 @@ export const PITCH_LIMITS = {
   xRange: [-0.75, 0.95],
   yRange: [0.0, 1.6],
   maxStep: 0.5, // 隣り合う制御点の差の上限（m）
-  maxBend: 0.3, // 2階差分の上限（曲がりの急さ＝加速度の上限）
+  // 2階差分（曲がりの急さ＝加速度）の上限。遅い球ほど大きく曲げられ、速い球はほぼまっすぐ。
+  maxBendSlow: 0.45, // 球速1
+  maxBendFast: 0.03, // 球速10
   durationSlow: 1.6, // 球速スライダー最小時のリリース→判定面の秒数
   durationFast: 0.5, // 最大時
   speedSteps: 10,

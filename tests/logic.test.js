@@ -6,7 +6,7 @@ import { newGame, applyPitchResult, winner } from '../src/rules.js';
 import { normalizeZones, pointInPolygon } from '../src/zones.js';
 import { firstCollision, simulateBattedBall, isStrike } from '../src/physics.js';
 import { launchFromOffsets, computeContact } from '../src/batting.js';
-import { buildPitchPath, constrainPitch, defaultPitch, releasePoint, pitchDuration } from '../src/pitch.js';
+import { buildPitchPath, bendLimit, constrainPitch, defaultPitch, releasePoint, pitchDuration } from '../src/pitch.js';
 import { PitchRun } from '../src/pitchRun.js';
 import { forecastCircle, randomForecastOffset } from '../src/forecast.js';
 import { project, unprojectAtZ, unprojectAtX, computeViewport, imageToScreen, screenToImage } from '../src/projection.js';
@@ -327,4 +327,30 @@ test('予報円は近づくほど小さくなり、通過点は常に円の内�
       assert.ok(Math.hypot(f.center[0] - pass[0], f.center[1] - pass[1]) < f.r, '通過点が円の外');
     }
   }
+});
+
+test('遅い球ほど曲げられ、速い球ほど曲げられない', () => {
+  const r = releasePoint();
+  // 大きく蛇行させようとした同じ入力を、球速だけ変えて制限する
+  const wild = { xs: [r[0], 0.6, -0.5, 0.6, -0.5], ys: [r[1], 1.2, 0.1, 1.2, 0.1] };
+  let prevBend = Infinity;
+  for (let speed = 1; speed <= PITCH_LIMITS.speedSteps; speed++) {
+    const p = constrainPitch({ ...wild, speed });
+    const lim = bendLimit(speed);
+    assert.ok(lim < prevBend, '速いほど上限が小さい');
+    prevBend = lim;
+    // 実際の曲がり（2階差分の最大）も上限以内
+    let bend = 0;
+    for (const vals of [p.xs, p.ys]) {
+      for (let i = 2; i < vals.length; i++) bend = Math.max(bend, Math.abs(vals[i] - 2 * vals[i - 1] + vals[i - 2]));
+    }
+    assert.ok(bend <= lim + 1e-9, `speed ${speed}: ${bend} > ${lim}`);
+  }
+  // 最速はほぼまっすぐ、最遅ははっきり曲がる
+  const curve = (speed) => {
+    const p = constrainPitch({ ...wild, speed });
+    return Math.max(...[2, 3, 4].map((i) => Math.abs(p.xs[i] - 2 * p.xs[i - 1] + p.xs[i - 2])));
+  };
+  assert.ok(curve(10) <= 0.03 + 1e-9);
+  assert.ok(curve(1) > 0.3);
 });

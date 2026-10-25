@@ -38,36 +38,73 @@ export function defaultPitch() {
 
 /**
  * 1軸ぶんの制御点に上限をかける。始点は固定。
- * 範囲 → 1階差（速さ）→ 2階差（曲がり＝加速度）の順で、両立できない場合は範囲と速さを優先する。
+ * 範囲・1階差（速さ）・2階差（曲がり＝加速度）をすべて守る。
+ * 曲がりの上限が小さいと、勢いのまま進んで範囲の端で急に曲がる必要が出るため、
+ * 「この先ずっと最大限ブレーキをかけても範囲内に収まる」値だけを選ぶ。
  */
-export function constrainAxis(values, range, first) {
-  const { maxStep, maxBend } = PITCH_LIMITS;
+export function constrainAxis(values, range, first, maxBend = bendLimit(1)) {
+  const { maxStep } = PITCH_LIMITS;
+  const n = values.length;
   const out = values.map((v) => (Number.isFinite(v) ? v : first));
   out[0] = first;
-  for (let i = 1; i < out.length; i++) {
+  const towardZero = (s) => (s > 0 ? Math.max(0, s - maxBend) : Math.min(0, s + maxBend));
+  // v を選んだあと、残りの点で減速し続けたときに範囲内に収まるか
+  const safe = (i, v) => {
+    let step = v - out[i - 1];
+    let p = v;
+    for (let k = i + 1; k < n; k++) {
+      step = towardZero(step);
+      p += step;
+      if (p < range[0] - 1e-12 || p > range[1] + 1e-12) return false;
+    }
+    return true;
+  };
+  for (let i = 1; i < n; i++) {
     let lo = Math.max(range[0], out[i - 1] - maxStep);
     let hi = Math.min(range[1], out[i - 1] + maxStep);
+    // 必ず条件を満たす値: 前の勢いを最大限ゆるめた位置（始点直後は止まった位置）
+    let anchor = out[i - 1];
     if (i >= 2) {
-      const pred = 2 * out[i - 1] - out[i - 2];
-      const blo = Math.max(lo, pred - maxBend);
-      const bhi = Math.min(hi, pred + maxBend);
-      if (blo <= bhi) {
-        lo = blo;
-        hi = bhi;
-      }
+      const prevStep = out[i - 1] - out[i - 2];
+      const pred = out[i - 1] + prevStep;
+      lo = Math.max(lo, pred - maxBend);
+      hi = Math.min(hi, pred + maxBend);
+      anchor = out[i - 1] + towardZero(prevStep);
     }
-    if (lo > hi) lo = hi = clamp(out[i - 1], range[0], range[1]);
-    out[i] = clamp(out[i], lo, hi);
+    anchor = clamp(anchor, lo, hi);
+    const target = clamp(out[i], lo, hi);
+    if (safe(i, target)) {
+      out[i] = target;
+      continue;
+    }
+    // anchor（安全）と target（危険）の間で、target に一番近い安全な値を探す
+    let a = anchor;
+    let b = target;
+    for (let k = 0; k < 40; k++) {
+      const m = (a + b) / 2;
+      if (safe(i, m)) a = m;
+      else b = m;
+    }
+    out[i] = a;
   }
   return out;
 }
 
+/** 球速ごとの曲がりの上限。遅いほど曲げられ、速いほど曲げられない。 */
+export function bendLimit(speed) {
+  const { maxBendSlow, maxBendFast, speedSteps } = PITCH_LIMITS;
+  const k = (clamp(speed, 1, speedSteps) - 1) / (speedSteps - 1);
+  return maxBendSlow + (maxBendFast - maxBendSlow) * k;
+}
+
 export function constrainPitch(p) {
   const r = releasePoint();
+  const speed = clamp(Math.round(p.speed ?? 5), 1, PITCH_LIMITS.speedSteps);
+  const bend = bendLimit(speed);
   return {
-    speed: clamp(Math.round(p.speed ?? 5), 1, PITCH_LIMITS.speedSteps),
-    xs: constrainAxis(p.xs, PITCH_LIMITS.xRange, r[0]),
-    ys: constrainAxis(p.ys, PITCH_LIMITS.yRange, r[1]),
+    speed,
+    xs: constrainAxis(p.xs, PITCH_LIMITS.xRange, r[0], bend),
+    ys: constrainAxis(p.ys, PITCH_LIMITS.yRange, r[1], bend),
   };
 }
 

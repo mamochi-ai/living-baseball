@@ -426,6 +426,11 @@ body.editing #btn-menu {
   touch-action: none;
 }
 
+.speed-note {
+  margin: -4px 0 0;
+  font-size: 12px;
+}
+
 .hint {
   font-size: 12px;
   font-weight: normal;

@@ -160,7 +160,7 @@ await page.evaluate(async () => {
   const { app, setPhase } = globalThis.__lrb;
   const { releasePoint, constrainPitch } = await import('./src/pitch.js');
   const r = releasePoint();
-  app.pendingPitch = constrainPitch({ speed: 3, xs: [r[0], r[0] + 0.05, r[0] + 0.1, 0, -0.1], ys: [r[1], 1.1, 1.6, 1.6, 1.6] });
+  app.pendingPitch = constrainPitch({ speed: 1, xs: [r[0], r[0] + 0.05, r[0] + 0.1, 0, -0.1], ys: [r[1], 1.1, 1.6, 1.6, 1.6] });
   setPhase('ready');
 });
 await page.click('#btn-ready');
