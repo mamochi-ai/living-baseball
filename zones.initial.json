@@ -1,0 +1,114 @@
+{
+  "coordinateSystem": "normalized image coordinates, x right, y down; reference background 1536x1024",
+  "status": "initial estimates (left zone widened above the TV, right zone widened to the ceiling and back corner); edit visually before finalizing",
+  "safeZones": [
+    {
+      "id": "between_curtains",
+      "label": "カーテンとカーテンの間",
+      "polygon": [
+        [
+          0.461,
+          0.164
+        ],
+        [
+          0.625,
+          0.164
+        ],
+        [
+          0.625,
+          0.49
+        ],
+        [
+          0.461,
+          0.49
+        ]
+      ]
+    },
+    {
+      "id": "right_door",
+      "label": "右のドア〜右の壁",
+      "polygon": [
+        [
+          0.824,
+          0.117
+        ],
+        [
+          1.0,
+          0.023
+        ],
+        [
+          1.0,
+          0.382
+        ],
+        [
+          0.824,
+          0.336
+        ]
+      ]
+    },
+    {
+      "id": "calendar",
+      "label": "カレンダー付近",
+      "polygon": [
+        [
+          0.716,
+          0.261
+        ],
+        [
+          0.758,
+          0.261
+        ],
+        [
+          0.758,
+          0.342
+        ],
+        [
+          0.716,
+          0.342
+        ]
+      ]
+    },
+    {
+      "id": "rear_left_cabinet_top",
+      "label": "テレビの上〜左奥の壁",
+      "polygon": [
+        [
+          0.166,
+          0.11
+        ],
+        [
+          0.401,
+          0.11
+        ],
+        [
+          0.401,
+          0.356
+        ],
+        [
+          0.342,
+          0.356
+        ],
+        [
+          0.342,
+          0.31
+        ],
+        [
+          0.166,
+          0.31
+        ]
+      ]
+    }
+  ],
+  "pitcherCatchZone": {
+    "center": [
+      0.56,
+      0.455
+    ],
+    "radius": [
+      0.058,
+      0.097
+    ],
+    "priority": "out overrides safe"
+  },
+  "defaultResult": "out"
+}
