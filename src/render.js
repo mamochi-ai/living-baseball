@@ -62,7 +62,7 @@ export class Renderer {
       { z: PITCHER.feet[2], draw: () => this.drawPitcher(scene.pitcherFrame) },
       { z: scene.zones.lamp.depthZ, draw: () => this.drawLamp(scene.lampBroken) },
       { z: vaseDepth(scene.zones), draw: () => this.drawVase(scene.vaseBroken) },
-      { z: SPRITES.batter.depthZ, draw: () => this.drawBatter(scene.batterFrame, scene.batterCursor) },
+      { z: SPRITES.batter.depthZ, draw: () => this.drawBatter(scene.batterFrame) },
     ];
     if (scene.previewPath) items.push({ z: 99, draw: () => this.drawPreviewPath(scene.previewPath) });
     if (scene.showStrikeZone) items.push({ z: PLATE.z + 0.01, draw: () => this.drawStrikeZone() });
@@ -92,20 +92,9 @@ export class Renderer {
     this.sprite(this.images.pitcher[frame - 1], sp.anchor, [f.u * IMAGE_W, f.v * IMAGE_H], sp.scale, sp.frameOffset[frame]);
   }
 
-  drawBatter(frame, cursor) {
+  drawBatter(frame) {
     const sp = SPRITES.batter;
-    let pos = sp.pos;
-    if (cursor) {
-      // カーソルに合わせて立ち位置を少しずらす（スイング中は固定された値が渡される）
-      const c = project([cursor[0], cursor[1], PLATE.z]);
-      const m = project([(PLATE.zoneX[0] + PLATE.zoneX[1]) / 2, (PLATE.zoneY[0] + PLATE.zoneY[1]) / 2, PLATE.z]);
-      const lim = (v, l) => Math.max(-l, Math.min(l, v));
-      pos = [
-        pos[0] + lim((c.u - m.u) * IMAGE_W * sp.followCursor[0], sp.followLimit[0]),
-        pos[1] + lim((c.v - m.v) * IMAGE_H * sp.followCursor[1], sp.followLimit[1]),
-      ];
-    }
-    this.sprite(this.images.batter[frame - 1], sp.anchor, pos, sp.scale, sp.frameOffset[frame]);
+    this.sprite(this.images.batter[frame - 1], sp.anchor, sp.pos, sp.scale, sp.frameOffset[frame]);
   }
 
   drawLamp(broken) {

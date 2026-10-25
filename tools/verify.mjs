@@ -64,6 +64,21 @@ await wait(100);
     free.maxStep <= free.limit + 1e-9 && free.xs.every((v) => v >= free.range[0] - 1e-9 && v <= free.range[1] + 1e-9),
     free.xs.map((v) => v.toFixed(2)).join(','),
   );
+  // 球速: バーを指でなぞって変えられる（つまみ以外から触り始めてもよい）
+  {
+    const cdpS = await ctx.newCDPSession(page);
+    const bar = await page.locator('#speed').boundingBox();
+    const y0 = bar.y + bar.height / 2;
+    const speeds = [];
+    await cdpS.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: bar.x + 4, y: y0, id: 9 }] });
+    speeds.push(await page.evaluate(() => globalThis.__lrb.app.pitches[1].speed));
+    for (let i = 1; i <= 10; i++) {
+      await cdpS.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: bar.x + 4 + (i / 10) * (bar.width - 8), y: y0, id: 9 }] });
+    }
+    speeds.push(await page.evaluate(() => globalThis.__lrb.app.pitches[1].speed));
+    await cdpS.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    check('球速スライダーを指でなぞって変えられる', speeds[0] === 1 && speeds[1] === 10, speeds.join(' → '));
+  }
   await page.click('#btn-try');
   await wait(1250);
   await page.screenshot({ path: `${out}/v00_pitch_edit_try.png` });

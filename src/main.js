@@ -301,7 +301,6 @@ function pressSwing() {
   const t = now() - app.cur.releaseAt;
   if (app.cur.run.pressSwing(t)) {
     app.cur.swingAt = now();
-    app.cur.swingCursor = [...app.cursor];
     $('btn-swing').classList.add('used');
     sfx.swing();
   }
@@ -511,14 +510,6 @@ function pitcherFrameAt(tRel) {
   return 12;
 }
 
-/** 打者の立ち位置に使うカーソル。スイングを始めたら、その時点の位置で固定する。 */
-function batterStance() {
-  if (!['ready', 'countdown', 'pitching', 'result'].includes(app.phase)) return null;
-  const c = app.cur;
-  if (c?.swingAt != null) return c.swingCursor;
-  return app.phase === 'result' ? null : app.cursor;
-}
-
 function batterFrameAt(swingAt, t) {
   if (swingAt === null) return BATTER_IDLE_FRAME;
   let acc = 0;
@@ -619,7 +610,6 @@ function frame() {
     previewPath,
     showStrikeZone: inPlay,
     cursor: ['ready', 'countdown', 'pitching'].includes(app.phase) ? app.cursor : null,
-    batterCursor: batterStance(),
     shake: t < app.shakeUntil ? (app.shakeUntil - t) / 0.45 : 0,
     time: t,
   });
@@ -697,9 +687,7 @@ function bindUi() {
   click('btn-handoff', () => app.handoffNext?.());
 
   // 投球編集
-  $('speed').addEventListener('input', (e) => {
-    pitchEditor.update({ ...pitchEditor.pitch, speed: Number(e.target.value) });
-  });
+  bindSpeedSlider();
   const setMode = (m) => {
     pitchEditor.setMode(m);
     $('mode-points').classList.toggle('on', m === 'points');
@@ -802,6 +790,45 @@ function bindBatControls() {
     e.preventDefault();
     pressSwing();
   });
+}
+
+/**
+ * 球速スライダー。iPad では標準のスライダーがつまみ以外をなぞっても動かないため、
+ * バー上のどこを触っても、指でなぞった位置の値になるよう自前で処理する。
+ */
+function bindSpeedSlider() {
+  const input = $('speed');
+  const area = input.closest('.speed');
+  let id = null;
+  const setFromX = (clientX) => {
+    const r = input.getBoundingClientRect();
+    const min = Number(input.min);
+    const max = Number(input.max);
+    const k = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+    const v = Math.round(min + k * (max - min));
+    if (v === Number(input.value) && pitchEditor.pitch?.speed === v) return;
+    input.value = String(v);
+    pitchEditor.update({ ...pitchEditor.pitch, speed: v });
+  };
+  area.addEventListener('pointerdown', (e) => {
+    if (id !== null) return;
+    e.preventDefault();
+    id = e.pointerId;
+    area.setPointerCapture(id);
+    setFromX(e.clientX);
+  });
+  area.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== id) return;
+    e.preventDefault();
+    setFromX(e.clientX);
+  });
+  const end = (e) => {
+    if (e.pointerId === id) id = null;
+  };
+  area.addEventListener('pointerup', end);
+  area.addEventListener('pointercancel', end);
+  // キーボード操作（PC）は標準のまま
+  input.addEventListener('input', () => pitchEditor.update({ ...pitchEditor.pitch, speed: Number(input.value) }));
 }
 
 function bindZoneEditor() {

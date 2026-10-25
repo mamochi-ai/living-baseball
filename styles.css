@@ -375,9 +375,14 @@ body.editing #btn-menu {
   font-weight: bold;
 }
 
+.speed {
+  touch-action: none;
+}
+
 .speed input {
   flex: 1;
-  height: 36px;
+  height: 44px;
+  touch-action: none;
 }
 
 .hint {
